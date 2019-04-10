@@ -1,0 +1,39 @@
+{{define "body"}}
+<div class="columns is-centered">
+    <div class="column is-half">
+
+        <h1 class="title is-3"> .sh0rty </h1>
+
+        <form name="url" method="post">
+            <div class="field has-addons has-addons-centered">
+                <div class="control is-expanded">
+                    <input
+                        type="text"
+                        value="{{ with .PostData }}{{ . }}{{ end }}"
+                        class="input is-medium"
+                        name="url"
+                        placeholder="Paste a long URL here"
+                        autofocus
+                        required
+                    >
+                    <input type="hidden" name="_token" value="{{ .CSRFToken }}">
+                </div>
+                <div class="control">
+                    <button type="submit" class="button is-info is-medium">
+                        <i class="fas fa-random"> </i>
+                    </button>
+                </div>
+            </div>
+
+            {{ with .Flash }}
+            <div class="control has-text-danger">
+                <strong> {{ . }} </strong>
+            </div>
+            {{ end }}
+
+        </form>
+    </div>
+</div>
+{{end}}
+
+{{template "base" .}}

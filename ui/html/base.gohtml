@@ -1,0 +1,53 @@
+{{ define "base" }}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="Generate shortcut links">
+    <title>
+        {{ if .Title }} {{ .Title }} - {{end}} .sh0rty
+    </title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/css/app.css">
+</head>
+
+<body>
+    <section class="hero is-fullheight is-light is-bold">
+        <div class="hero-body">
+            <div class="container">
+                {{ template "body" . }}
+            </div>
+        </div>
+
+        <div class="hero-foot">
+            <div class="container has-text-centered">
+                <section class="section">
+                    {{ if eq .Page "view" }}
+                    <a class="button is-info is-small" href="/">
+                        <i class="fas fa-random"> </i> &nbsp;
+                        Get another one
+                    </a>
+                    {{ end }}
+
+                    {{ if and (.UserID) (ne .Page "admin") }}
+                    <form method="post" action="/_a/lg/" class="mt-2">
+                        <a href="/_a/" class="button is-info is-small" title="Admin">
+                            <i class="fa fa-cogs"> </i>
+                        </a>
+                        <button type="submit" class="button is-info is-small" title="Sign out">
+                            <i class="fas fa-sign-out-alt"> </i>
+                        </button>
+                        <input type="hidden" name="_token" value="{{ .CSRFToken }}">
+                    </form>
+                    {{ end }}
+                </section>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
+{{ end }}

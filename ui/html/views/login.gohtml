@@ -1,0 +1,53 @@
+{{ define "body" }}
+<div class="columns is-centered">
+    <div class="column is-one-third">
+        <h1 class="title is-3 has-text-centered">Login</h1>
+
+        <div class="box">
+            <form action="/_l/" method="post">
+                <div class="field">
+                    <div class="control">
+                        <input
+                            class="input is-medium"
+                            type="text"
+                            id="email"
+                            name="email"
+                            placeholder="Email"
+                            value="{{ with .LastUsername }}{{ . }}{{ end }}"
+                            required
+                            autofocus
+                        />
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input
+                            class="input is-medium"
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Password"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div class="has-text-centered">
+                    <button class="button is-info is-medium is-fullwidth" type="submit">
+                        <i class="fas fa-user-lock"> </i> &nbsp; Submit
+                    </button>
+                </div>
+
+                <input type="hidden" name="_token" value="{{ .CSRFToken }}">
+            </form>
+        </div>
+
+        {{ with .Flash }}
+        <div  class="notification is-warning"> {{ . }} </div>
+        {{ end }}
+
+    </div>
+</div>
+{{ end }}
+
+{{ template "base" .}}

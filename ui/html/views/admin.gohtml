@@ -1,0 +1,84 @@
+{{ define "body" }}
+{{ $request := .Request }}
+
+            <div class="level">
+                <div class="level-left">
+                    <div class="level-item">
+                        <h1 class="title is-3"> Admin: All shorties </h1>
+                    </div>
+                </div>
+                <div class="level-right">
+                    {{ if .Shorties }}
+                    <div class="level-item">
+                        <form name="remove-all" action="/_a/rm/" method="post">
+                            <input type="hidden" name="_token" value="{{ .CSRFToken }}">
+                            <button
+                                type="submit"
+                                class="button is-danger is-small"
+                                title="Remove all"
+                                onclick="return confirm('Really delete everything?');"
+                            >
+                                <i class="fas fa-trash"> </i> &nbsp; Remove all
+                            </button>
+                        </form>
+                    </div>
+                    {{ end }}
+                    <div class="level-item">
+                        <a href="/" class="button is-info is-small" title="Back to index">
+                            <i class="fas fa-home"> </i> &nbsp; Index
+                        </a>
+                    </div>
+                    <div class="level-item">
+                        <form method="post" action="/_a/lg/">
+                            <button type="submit" class="button is-info is-small" title="Sign out">
+                                <i class="fas fa-sign-out-alt"> </i> &nbsp; Sign out
+                            </button>
+                            <input type="hidden" name="_token" value="{{ .CSRFToken }}">
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {{ if .Shorties }}
+            <table class="table is-fullwidth">
+                <thead>
+                    <tr>
+                        <th> ID </th>
+                        <th> Link </th>
+                        <th class="has-text-right"> Shorty </th>
+                        <th class="has-text-right"> Clicks </th>
+                        <th class="has-text-right"> Created </th>
+                        <th> </th>
+                    </tr>
+                </thead>
+                <tbody>
+                {{ range .Shorties }}
+                <tr>
+                    <td> {{ .ID }} </td>
+                    <td> {{ .Link }} </td>
+                    <td class="has-text-right">
+                        <b>
+                            <a href="{{ formatLink .Shorty $request }}"> {{ .Shorty }} </a>
+                        </b>
+                    </td>
+                    <td class="has-text-right"> {{ .Clicks }} </td>
+                    <td class="has-text-right"> <i> {{ formatDate .Created }} by {{ .IP }} </i> </td>
+                    <td class="has-text-right">
+                        <a
+                            class="button is-small is-info"
+                            href="/_a/r/{{ .Shorty }}"
+                            onclick="return confirm('Remove shorty ' + {{ .Shorty }} + '?')"
+                        >
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {{ end }}
+                </tbody>
+            </table>
+            {{ else }}
+                <p>No links found.</p>
+            {{ end }}
+        {{ end }}
+
+{{ template "base" . }}
