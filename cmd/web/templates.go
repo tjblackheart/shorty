@@ -60,9 +60,14 @@ func (app *application) render(
 	w http.ResponseWriter,
 	r *http.Request,
 	name string,
-	files []string,
+	tpl string,
 	data *tplData,
 ) {
+	files := []string{
+		"./ui/html/base.gohtml",
+		"./ui/html/views/" + tpl,
+	}
+
 	buf := new(bytes.Buffer)
 
 	// register functions

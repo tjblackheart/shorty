@@ -94,10 +94,8 @@ func (m *ShortyModel) Insert(s *models.Shorty) error {
 
 // AddClick updates a shorty
 func (m *ShortyModel) AddClick(s *models.Shorty) error {
-	s.Clicks = s.Clicks + 1
-
 	query := "UPDATE shorty SET clicks = ? WHERE id = ?"
-	_, err := m.DB.Exec(query, s.Clicks, s.ID)
+	_, err := m.DB.Exec(query, s.Clicks+1, s.ID)
 
 	if err != nil {
 		return err

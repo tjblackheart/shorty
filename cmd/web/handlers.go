@@ -13,22 +13,12 @@ import (
 
 // 404 error page
 func (app *application) notFound(w http.ResponseWriter, r *http.Request) {
-	files := []string{
-		"ui/html/base.gohtml",
-		"ui/html/views/404.gohtml",
-	}
-
-	app.render(w, r, "base", files, &tplData{})
+	app.render(w, r, "base", "404.gohtml", &tplData{})
 }
 
 // Form / Index
 func (app *application) index(w http.ResponseWriter, r *http.Request) {
-	files := []string{
-		"ui/html/base.gohtml",
-		"ui/html/views/index.gohtml",
-	}
-
-	app.render(w, r, "base", files, &tplData{})
+	app.render(w, r, "base", "index.gohtml", &tplData{})
 }
 
 // Calculate shorty
@@ -91,12 +81,7 @@ func (app *application) view(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
-		"ui/html/base.gohtml",
-		"ui/html/views/shorty.gohtml",
-	}
-
-	app.render(w, r, "base", files, &tplData{
+	app.render(w, r, "base", "shorty.gohtml", &tplData{
 		Title:   "View",
 		Shorty:  s,
 		Request: r,
@@ -161,12 +146,7 @@ func (app *application) admin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
-		"ui/html/base.gohtml",
-		"ui/html/views/admin.gohtml",
-	}
-
-	app.render(w, r, "base", files, &tplData{
+	app.render(w, r, "base", "admin.gohtml", &tplData{
 		Title:    "Admin",
 		Shorties: shorties,
 		Request:  r,
@@ -176,12 +156,7 @@ func (app *application) admin(w http.ResponseWriter, r *http.Request) {
 
 // Login form
 func (app *application) login(w http.ResponseWriter, r *http.Request) {
-	files := []string{
-		"ui/html/base.gohtml",
-		"ui/html/views/login.gohtml",
-	}
-
-	app.render(w, r, "base", files, &tplData{
+	app.render(w, r, "base", "login.gohtml", &tplData{
 		Title:   "Login",
 		Request: r,
 	})
