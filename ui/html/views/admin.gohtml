@@ -40,42 +40,46 @@
             </div>
 
             {{ if .Shorties }}
-            <table class="table is-fullwidth">
-                <thead>
+            <div class="table-container">
+                <table class="table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th> ID </th>
+                            <th> Link </th>
+                            <th class="has-text-right"> Shorty </th>
+                            <th class="has-text-right"> Clicks </th>
+                            <th class="has-text-right"> Created </th>
+                            <th> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {{ range .Shorties }}
                     <tr>
-                        <th> ID </th>
-                        <th> Link </th>
-                        <th class="has-text-right"> Shorty </th>
-                        <th class="has-text-right"> Clicks </th>
-                        <th class="has-text-right"> Created </th>
-                        <th> </th>
+                        <td> {{ .ID }} </td>
+                        <td>
+                            <span title="{{ .Link }}"> {{ shorten .Link 75 }} </span>
+                        </td>
+                        <td class="has-text-right">
+                            <b>
+                                <a href="{{ formatLink .Shorty $request }}"> {{ .Shorty }} </a>
+                            </b>
+                        </td>
+                        <td class="has-text-right"> {{ .Clicks }} </td>
+                        <td class="has-text-right"> <i> {{ formatDate .Created }} by {{ .IP }} </i> </td>
+                        <td class="has-text-right">
+                            <a
+                                class="button is-small is-info"
+                                href="/_a/r/{{ .Shorty }}"
+                                onclick="return confirm('Remove shorty ' + {{ .Shorty }} + '?')"
+                            >
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                {{ range .Shorties }}
-                <tr>
-                    <td> {{ .ID }} </td>
-                    <td> {{ .Link }} </td>
-                    <td class="has-text-right">
-                        <b>
-                            <a href="{{ formatLink .Shorty $request }}"> {{ .Shorty }} </a>
-                        </b>
-                    </td>
-                    <td class="has-text-right"> {{ .Clicks }} </td>
-                    <td class="has-text-right"> <i> {{ formatDate .Created }} by {{ .IP }} </i> </td>
-                    <td class="has-text-right">
-                        <a
-                            class="button is-small is-info"
-                            href="/_a/r/{{ .Shorty }}"
-                            onclick="return confirm('Remove shorty ' + {{ .Shorty }} + '?')"
-                        >
-                            <i class="fas fa-trash"></i>
-                        </a>
-                    </td>
-                </tr>
-                {{ end }}
-                </tbody>
-            </table>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
             {{ else }}
                 <p>No links found.</p>
             {{ end }}

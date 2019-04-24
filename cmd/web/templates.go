@@ -26,6 +26,7 @@ type tplData struct {
 var functions = template.FuncMap{
 	"formatDate": formatDate,
 	"formatLink": formatLink,
+	"shorten":    shorten,
 }
 
 func formatDate(t time.Time) string {
@@ -44,6 +45,14 @@ func formatLink(s string, r *http.Request) string {
 	}
 
 	return fmt.Sprintf("%s://%s/%s", scheme, r.Host, s)
+}
+
+func shorten(s string, n int) string {
+	if len(s) > n {
+		return s[:n] + " ... "
+	}
+
+	return s
 }
 
 // the render function
