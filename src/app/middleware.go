@@ -2,8 +2,9 @@ package app
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func (app App) requestLog(next http.Handler) http.Handler {

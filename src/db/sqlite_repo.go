@@ -3,11 +3,11 @@ package db
 import (
 	"context"
 	"database/sql"
-	"log"
 	"strings"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3" // sqlite driver only needed here.
+	log "github.com/sirupsen/logrus"
 	"github.com/tjblackheart/shorty/models"
 )
 

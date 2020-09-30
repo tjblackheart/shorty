@@ -2,12 +2,12 @@ package app
 
 import (
 	"encoding/gob"
-	"log"
 	"math/rand"
 	"net/http"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
+	log "github.com/sirupsen/logrus"
 	"github.com/tjblackheart/shorty/db"
 )
 
@@ -48,12 +48,12 @@ func (app App) Serve() {
 		WriteTimeout: 5 * time.Second,
 	}
 
-	log.Printf("App listening at %s ...\n", app.cfg.Addr)
+	log.Infof("App listening at %s ...\n", app.cfg.Addr)
 	log.Fatalln(srv.ListenAndServe())
 }
 
 //
 
 func (app App) err(pkg, msg string) {
-	log.Printf("[ERROR] %s: %s", pkg, msg)
+	log.Errorf("%s: %s", pkg, msg)
 }

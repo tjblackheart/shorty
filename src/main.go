@@ -2,9 +2,9 @@ package main
 
 import (
 	"errors"
-	"log"
 	"os"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/tjblackheart/shorty/app"
 )
 
