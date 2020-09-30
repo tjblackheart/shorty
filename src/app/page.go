@@ -17,17 +17,19 @@ func (app App) index(w http.ResponseWriter, r *http.Request) {
 		"flash": app.session.Pop(r.Context(), "flash"),
 		"error": app.session.PopString(r.Context(), "error"),
 		"auth":  app.session.GetBool(r.Context(), "_auth"),
+		"url":   app.session.PopString(r.Context(), "url"),
 		"_csrf": csrf.Token(r),
 	})
 }
 
 func (app App) create(w http.ResponseWriter, r *http.Request) {
-	url := r.PostFormValue("url")
+	url := strings.TrimSpace(r.PostFormValue("url"))
 	s := &models.Shorty{URL: url, IP: r.RemoteAddr}
 
 	if err := s.Validate(); err != nil {
 		app.err("page/create/validate", "Validation failed: "+err.Error())
 		app.session.Put(r.Context(), "error", "What? This does not look like a valid URL.")
+		app.session.Put(r.Context(), "url", url)
 		http.Redirect(w, r, "/", 302)
 		return
 	}
@@ -60,8 +62,7 @@ func (app App) view(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		app.err("view/findOne", err.Error())
-		app.session.Put(r.Context(), "message", "Link not found. Perhaps it was removed?")
-		http.Redirect(w, r, "/error/404", 302)
+		app.renderError(w, r, "404", "Link not found. Perhaps it was removed?")
 		return
 	}
 
@@ -77,15 +78,14 @@ func (app App) redirect(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		app.err("redirect/findOne", err.Error())
-		app.session.Put(r.Context(), "message", "Link not found. Perhaps it was removed?")
-		http.Redirect(w, r, "/error/404", 302)
+		app.renderError(w, r, "404", "Link not found. Perhaps it was removed?")
 		return
 	}
 
 	s.Clicks++
 	if err := app.repo.Update(s); err != nil {
 		app.err("redirect/update", err.Error())
-		http.Redirect(w, r, "/error/500", 500)
+		app.renderError(w, r, "500", "Something went terribly wrong.")
 		return
 	}
 
@@ -124,20 +124,13 @@ func (app App) authenticate(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/_a/", 302)
 }
 
-func (app App) renderError(w http.ResponseWriter, r *http.Request) {
-	code := mux.Vars(r)["code"]
-	msg := app.session.PopString(r.Context(), "message")
+func (app App) notFound(w http.ResponseWriter, r *http.Request) {
+	app.renderError(w, r, "404", "There is nothing here.")
+}
 
-	if msg == "" {
-		msg = "Something went terribly wrong."
-	}
-
+func (app App) renderError(w http.ResponseWriter, r *http.Request, code, msg string) {
 	app.render(w, "page/error.html.j2", pongo2.Context{
 		"code":    code,
 		"message": msg,
 	})
-}
-
-func (app App) render404(w http.ResponseWriter, r *http.Request) {
-	app.render(w, "page/404.html.j2", pongo2.Context{})
 }

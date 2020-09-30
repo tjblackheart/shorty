@@ -22,12 +22,11 @@ func (app App) router() *mux.Router {
 	r.HandleFunc("/", app.create).Methods(http.MethodPost)
 	r.HandleFunc("/_l", app.login).Methods(http.MethodGet)
 	r.HandleFunc("/_l", app.authenticate).Methods(http.MethodPost)
-	r.HandleFunc("/error/{code:[404|500]{3}}", app.renderError)
 	r.HandleFunc("/{hashID:[a-zA-Z0-9]{3}}", app.redirect)
 	r.HandleFunc("/v/{hashID:[a-zA-Z0-9]{3}}", app.view)
 
 	r.PathPrefix("/assets").Handler(http.StripPrefix("/assets", http.FileServer(http.Dir("./assets/dist"))))
-	r.NotFoundHandler = http.HandlerFunc(app.render404)
+	r.NotFoundHandler = http.HandlerFunc(app.notFound)
 
 	a := r.PathPrefix("/_a").Subrouter()
 	a.Use(app.authenticated)
