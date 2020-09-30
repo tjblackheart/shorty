@@ -4,8 +4,10 @@ A small link shortener app written in Go using [Gorilla Mux](https://github.com/
 
 ## Usage
 
-* Copy .env to .env.local
-* Set the desired variables in `.env.local` or just export them at runtime
+* Copy .env to .env.local.
+* Set the desired variables in `.env.local` or just export them at runtime.
+* To add an admin user: Set APP_USER and APP_BCRYPT_PW. The latter should be a bcrypt encrypted string.
+* Set APP_SECRET to a secure random string, as this is used for the CSRF token.
 
 ## Dev setup
 
