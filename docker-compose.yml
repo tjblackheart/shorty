@@ -1,0 +1,15 @@
+version: "3.7"
+
+services:
+  app:
+    container_name: shorty_app_dev
+    build:
+      context: .
+      target: dev
+    image: golang:1-alpine
+    volumes:
+      - ./data:/data
+      - ./src:/app
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file: ./.env.local

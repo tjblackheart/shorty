@@ -1,0 +1,29 @@
+{% extends "../base.html.j2" %}
+
+{% block body %}
+  <div class="columns">
+    <div class="column"></div>
+      <div class="column is-half has-text-centered">
+        <h1 class="title is-4">Here you go:</h1>
+        <hr>
+
+        <h2 class="title is-3">
+          <a href="/{{shortLink}}"> https://{{host}}/{{shortLink}} </a>
+        </h2>
+        <hr>
+      </div>
+    <div class="column"></div>
+  </div>
+{% endblock %}
+
+{% block footer %}
+  <div class="container has-text-centered">
+    <section class="section">
+      <p>
+        <a class="button is-info" href="/">
+          <i class="fas fa-sync"> </i> &nbsp; Get another one
+        </a>
+      </p>
+    </section>
+  </div>
+{% endblock %}

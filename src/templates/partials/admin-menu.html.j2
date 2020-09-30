@@ -1,0 +1,58 @@
+<div class="level">
+  <div class="level-left">
+    <div class="level-item">
+      <h1 class="title">Admin: All Shorties</h1>
+    </div>
+  </div>
+
+  <div class="level-right">
+    <div class="level-item">
+      <a href="/" class="button is-primary is-small" title="Back to index">
+        <i class="fas fa-home"> </i> &nbsp; Index
+      </a>
+    </div>
+    <div class="level-item">
+      <a
+        href="#"
+        class="button is-primary is-small"
+        title="Import from file"
+        id="import"
+      >
+        <i class="fas fa-cloud-upload-alt"> </i> &nbsp; Import
+      </a>
+    </div>
+    <div class="level-item">
+      <a
+        href="/_a/e"
+        class="button is-primary is-small"
+        title="Export to file"
+        {% if shorties|length == 0 %}
+          disabled
+          onclick="return false"
+        {% endif %}
+      >
+        <i class="fas fa-cloud-download-alt"> </i> &nbsp; Export
+      </a>
+    </div>
+    <div class="level-item">
+      <a
+        href="/_a/r"
+        class="button is-primary is-small"
+        title="Remove all"
+        {% if shorties|length == 0 %}
+          disabled
+          onclick="return false"
+        {% else %}
+          onclick="return confirm('Sure?')"
+        {% endif %}
+      >
+        <i class="fas fa-trash"> </i> &nbsp; Remove all
+      </a>
+    </div>
+    <div class="level-item">
+      <a href="/_a/l" class="button is-primary is-small" title="Sign out">
+        <i class="fas fa-sign-out-alt"> </i> &nbsp; Sign out
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,116 @@
+{% extends '../base.html.j2' %}
+
+{% block body %}
+
+  {% include "../partials/admin-menu.html.j2" %}
+  {% include "../partials/flash.html.j2" %}
+  {% include "../partials/import-modal.html.j2" %}
+
+  {% if shorties|length > 0 %}
+  <div class="table-container">
+    <table class="table is-fullwidth">
+      <thead>
+        <tr>
+          <th>URL</th>
+          <th>Shorty</th>
+          <th>Clicks</th>
+          <th>Added</th>
+          <th></th>
+        </tr>
+      </thead>
+    <tbody>
+      {% for s in shorties %}
+        <tr>
+          <td>
+            <span title="{{s.URL}}">
+              {% if s.URL|length > 70 %} {{ s.URL|truncatechars:70 }}
+              {% else  %} {{ s.URL }}
+              {% endif %}
+            </span>
+          </td>
+          <td class="has-text-centered">
+            <b> <a href="/{{s.Shorty}}"> {{s.Shorty}} </a> </b>
+          </td>
+          <td class="has-text-centered"> {{s.Clicks}} </td>
+          <td class="is-small">
+            <i>
+              {{ s.CreatedAt|date:"02.01.2006, 15:04" }}
+              by {% if s.IP %} {{ s.IP }} {% else %} ? {% endif %}
+            </i>
+          </td>
+          <td class="has-text-right">
+            <a
+              class="button is-small is-primary"
+              href="/_a/r/{{s.Shorty}}"
+              onclick="return confirm('Sure?')"
+            >
+              <i class="fas fa-trash"> </i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <hr>
+    <p> Nothing here. </p>
+    <hr>
+  {% endif %}
+
+{% endblock %}
+
+
+{% block scripts %}
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const $ = el => document.querySelector(el)
+
+    const importLink = $('#import')
+    const modal = $('#modal')
+    const modalClose = $('.button-close')
+    const form = $('#form')
+    const input = $('#file input[type=file]')
+    const error = $('#error')
+    const btn = $('#button-submit')
+    const fileName = $('#file .file-name')
+
+    importLink.addEventListener('click', (e) => {
+      e.preventDefault()
+      modal.classList.add('is-active')
+    })
+
+    modalClose.addEventListener('click', (e) => {
+      e.preventDefault()
+      modal.classList.remove('is-active')
+      error.innerHTML = ''
+    })
+
+    form.addEventListener('submit', e => {
+      e.preventDefault()
+      if(confirm('This will merge exisiting entries. Are you sure?')) {
+        btn.disabled = true
+        btn.classList.add('is-loading')
+        form.submit()
+      }
+    })
+
+    input.onchange = e => {
+      error.innerHTML = ''
+      fileName.textContent = 'No file selected.'
+      btn.disabled = true
+
+      const type = e.target.files[0].type
+      if (type !== 'application/json') {
+        error.innerHTML = 'Invalid file type.'
+        return false
+      }
+
+      if (input.files.length > 0) {
+        btn.disabled = false
+        fileName.textContent = input.files[0].name;
+      }
+    }
+  })
+  </script>
+{% endblock %}

@@ -1,7 +1,7 @@
-tls/*
-!tls/.gitkeep
-var/*
-!var/.gitkeep
-bin/*
-!bin/.gitkeep
-.env
+data/*
+!data/.gitkeep
+src/assets/dist
+src/assets/node_modules
+src/tmp
+.env.local
+start-prod.sh

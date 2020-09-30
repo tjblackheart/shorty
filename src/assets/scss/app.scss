@@ -1,0 +1,37 @@
+@import "~bulma/sass/utilities/initial-variables.sass";
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,700');
+
+$blue: #22A7F0;
+$primary: $blue;
+$info: $blue;
+$radius: 2px;
+$radius-large: 4px;
+
+$family-sans-serif: "Roboto", sans-serif;
+$button-focus-box-shadow-size: 0;
+$input-focus-box-shadow-size: 0;
+
+@import '~bulma/bulma.sass';
+@import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "~@fortawesome/fontawesome-free/scss/solid.scss";
+
+hr {
+  height: 1px;
+  background-color: #ddd;
+}
+
+.box {
+  border-radius: $radius;
+  box-shadow: none;
+  border: 1px solid #ddd;
+}
+
+span.file-name {
+  background: #fff;
+}
+
+.modal-card-foot {
+  border-top: 1px solid #dbdbdb;
+  background: #fff;
+  justify-content: flex-end;
+}

@@ -1,6 +1,0 @@
-@import url("bulma.min.css");
-
-hr { height: 1px; background-color: #ddd; }
-.input, .button, .textarea { border-radius: 2px; }
-input:active, input:focus { box-shadow: none !important; }
-.mt-2 { margin-top: 20px; }

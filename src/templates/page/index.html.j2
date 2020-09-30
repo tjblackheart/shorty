@@ -1,0 +1,55 @@
+{% extends "../base.html.j2" %}
+
+{%- block body -%}
+  <div class="columns is-centered">
+    <div class="column is-half" id="content">
+      <h1 class="title is-3"> Shorty </h1>
+      <h2 class="subtitle">Makes things shorter.</h2>
+
+      {%- include "../partials/flash.html.j2" -%}
+
+      <form class="form" method="post" action="/">
+        <div class="field has-addons has-addons-centered">
+          <div class="control is-expanded">
+            <input
+              class="input is-medium"
+              type="text"
+              name="url"
+              value="{{ url }}"
+              placeholder="http://a-really-long.url?query"
+              required
+              autofocus
+            >
+          </div>
+
+          <div class="control">
+            <button type="submit" id="shorty" class="button is-info is-medium">
+              <i class="fas fa-random"> </i>
+            </button>
+          </div>
+        </div>
+
+        {% if error %}
+        <div class="field">
+          <div class="control has-text-danger"> {{ error }} </div>
+        </div>
+        {% endif %}
+
+        <input type="hidden" name="_csrf" value="{{_csrf}}">
+      </form>
+
+    </div>
+  </div>
+{%- endblock -%}
+
+{% block footer %}
+  {% if auth == true %}
+  <div class="container has-text-centered">
+    <section class="section">
+      <a href="/_a/" class="button is-primary is-small">
+        <i class="fa fa-cogs"> </i>
+      </a>
+    </section>
+  </div>
+  {% endif %}
+{% endblock %}

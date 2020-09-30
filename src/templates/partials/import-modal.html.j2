@@ -1,0 +1,37 @@
+<div class="modal" id="modal">
+  <div class="modal-background"></div>
+    <div class="modal-card">
+      <form action="/_a/i" method="post" id="form" enctype="multipart/form-data">
+
+        <section class="modal-card-body">
+          <h1 class="title is-4"> Import </h1>
+          <h2 class="subtitle is-6">Upload json</h2>
+          <div class="field">
+            <div class="control is-expanded">
+              <div class="file has-name is-medium is-fullwidth" id="file">
+                <label class="file-label">
+                  <input class="file-input" type="file" name="import" accept="application/json">
+                  <span class="file-cta">
+                    <span class="file-icon"> <i class="fas fa-upload"></i> </span>
+                    <span class="file-label">Select</span>
+                  </span>
+                  <span class="file-name"> No file selected. </span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="control has-text-danger" id="error"> {{ error }} </div>
+          </div>
+          <input type="hidden" name="_csrf" value="{{ _csrf }}">
+        </section>
+
+        <footer class="modal-card-foot">
+          <button type="submit" class="button is-primary" id="button-submit" disabled>
+            <i class="fas fa-cloud-upload-alt"> </i> &nbsp; Import
+          </button>
+          <a href="/_a" class="button button-close">Cancel</a>
+        </footer>
+      </form>
+    </div>
+</div>

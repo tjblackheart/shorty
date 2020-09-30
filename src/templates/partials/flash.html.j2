@@ -1,0 +1,9 @@
+{% if flash %}
+  <div class="notification is-{{ flash.Type }}">
+    {% if flash.Type == "danger" %} <b> Error: </b>{% endif %}
+    {% if flash.Type == "warning" %} <b> Warning: </b>{% endif %}
+    {% if flash.Type == "success" %} <b> Success: </b>{% endif %}
+    {% if flash.Type == "info" %} <b> Info: </b>{% endif %}
+    {{ flash.Message }}
+  </div>
+{% endif %}
