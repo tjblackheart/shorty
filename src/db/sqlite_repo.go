@@ -183,6 +183,7 @@ func (r sqliteRepo) SaveMany(list []*models.Shorty) error {
 	for _, s := range list {
 		if err = r.Save(s); err != nil {
 			if _, ok := err.(ErrUnique); ok {
+				log.Printf("SaveMany: Entry %s already exists.\n", s.Shorty)
 				continue
 			}
 
