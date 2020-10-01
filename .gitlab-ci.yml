@@ -11,7 +11,6 @@ stages:
     APP_USER: "${APP_USER}"
     APP_BCRYPT_PW: "${APP_BCRYPT_PW}"
     APP_SECRET: "${APP_SECRET}"
-    IMAGE_NAME: "${CI_REGISTRY}/shorty"
 
 before_script:
   - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
@@ -22,15 +21,14 @@ build:
   #  - docker:19.03.12-dind
   stage: build
   script:
-    - echo "image -> ${IMAGE_NAME}"
-    - docker build --pull . -t ${IMAGE_NAME}
-    - docker push ${IMAGE_NAME}
+    - docker build --pull . -t ${CI_REGISTRY}/shorty
+    - docker push ${CI_REGISTRY}/shorty
 
 deploy:
   stage: deploy
   when: manual
   script:
-    - docker pull ${IMAGE_NAME}
+    - docker pull ${CI_REGISTRY}/shorty
     - docker run \
       -e APP_PORT=${APP_PORT} \
       -e APP_USER=${APP_USER} \
