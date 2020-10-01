@@ -30,6 +30,7 @@ deploy:
   script:
     - docker pull ${CI_REGISTRY}/go/shorty
     - docker run
+      -d
       -e APP_PORT=${APP_PORT}
       -e APP_USER=${APP_USER}
       -e APP_BCRYPT_PW=${APP_BCRYPT_PW}
@@ -37,5 +38,3 @@ deploy:
       -v /opt/volumes/shorty:/data
       -p "127.0.0.1:${APP_PORT}:${APP_PORT}"
       ${CI_REGISTRY}/go/shorty
-      -d
-
