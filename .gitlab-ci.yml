@@ -22,7 +22,7 @@ build:
   #  - docker:19.03.12-dind
   stage: build
   script:
-    - docker build --pull -t ${IMAGE_NAME} .
+    - docker build --pull . -t ${IMAGE_NAME}
     - docker push ${IMAGE_NAME}
 
 deploy:
