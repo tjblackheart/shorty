@@ -22,6 +22,7 @@ build:
   #  - docker:19.03.12-dind
   stage: build
   script:
+    - echo ${IMAGE_NAME}
     - docker build --pull . -t ${IMAGE_NAME}
     - docker push ${IMAGE_NAME}
 
