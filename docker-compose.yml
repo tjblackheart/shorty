@@ -6,10 +6,10 @@ services:
     build:
       context: .
       target: dev
-    image: golang:1-alpine
     volumes:
       - ./data:/data
       - ./src:/app
     ports:
       - "127.0.0.1:3000:3000"
     env_file: ./.env.local
+    command: sh -c "cd assets && npm i && npm run build && cd /app && fresh -c /runner.conf"

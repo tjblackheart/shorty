@@ -3,8 +3,8 @@ WORKDIR /app
 COPY src .
 COPY ./conf/runner.conf /runner.conf
 RUN apk add --update git gcc libc-dev npm && \
-    go get github.com/pilu/fresh && chown -R 1000. /app
-CMD [ "fresh", "-c", "/runner.conf" ]
+    go get github.com/pilu/fresh && \
+    chown -R 1000. /app
 
 FROM golang:1-alpine as gobuild
 WORKDIR /app
