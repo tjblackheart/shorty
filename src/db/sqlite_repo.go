@@ -174,11 +174,12 @@ func (r repository) Save(s *models.Shorty) error {
 	return nil
 }
 
-func (r repository) SaveMany(list []*models.Shorty) error {
+func (r repository) SaveMany(list []*models.Shorty) (int, error) {
+	count := 0
 	ctx := context.Background()
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
-		return err
+		return count, err
 	}
 
 	for _, s := range list {
@@ -189,15 +190,16 @@ func (r repository) SaveMany(list []*models.Shorty) error {
 			}
 
 			tx.Rollback()
-			return err
+			return count, err
 		}
+		count++
 	}
 
 	if err = tx.Commit(); err != nil {
-		return err
+		return count, err
 	}
 
-	return nil
+	return count, nil
 }
 
 func (r repository) Update(s *models.Shorty) error {

@@ -3,6 +3,7 @@ package app
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -78,14 +79,15 @@ func (app App) importJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	buf.Reset()
 
-	if err := app.db.SaveMany(shorties); err != nil {
+	count, err := app.db.SaveMany(shorties)
+	if err != nil {
 		app.err("admin/import/saveMany", err.Error())
 		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
 		http.Redirect(w, r, "/_a/", 302)
 		return
 	}
 
-	app.session.Put(r.Context(), "flash", Flash{"success", "Import ok."})
+	app.session.Put(r.Context(), "flash", Flash{"success", fmt.Sprintf("Import successful, %d new entries.", count)})
 	http.Redirect(w, r, "/_a/", 302)
 }
 

@@ -42,13 +42,13 @@ func (app App) Serve() {
 	defer app.db.Close()
 
 	srv := http.Server{
-		Addr:         app.cfg.Addr,
+		Addr:         app.cfg.Port,
 		Handler:      app.router(),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 	}
 
-	log.Infof("App listening at %s ...", app.cfg.Addr)
+	log.Infof("App listening at %s ...", app.cfg.Port)
 	log.Fatalln(srv.ListenAndServe())
 }
 

@@ -8,7 +8,7 @@ import (
 type (
 	// Config holds the application configuration
 	Config struct {
-		Addr        string
+		Port        string
 		DQN         string
 		Secret      string
 		Credentials Creds

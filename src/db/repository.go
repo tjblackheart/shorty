@@ -15,7 +15,7 @@ type (
 		DeleteOne(shortLink string) error
 		DeleteMany() error
 		Save(s *models.Shorty) error
-		SaveMany(s []*models.Shorty) error
+		SaveMany(s []*models.Shorty) (int, error)
 		Update(s *models.Shorty) error
 		Close()
 	}

@@ -19,7 +19,7 @@ func main() {
 
 func getCfg() (*app.Config, error) {
 	cfg := &app.Config{
-		Addr:   os.Getenv("APP_HOST"),
+		Port:   os.Getenv("APP_PORT"),
 		Secret: os.Getenv("APP_SECRET"),
 		DQN:    "/data/db.sqlite",
 		Credentials: app.Creds{
@@ -28,16 +28,21 @@ func getCfg() (*app.Config, error) {
 		},
 	}
 
+	if cfg.Port == "" {
+		cfg.Port = ":3000"
+		log.Infof("APP_PORT not set, defaulting to %s", cfg.Port)
+	}
+
+	if string(cfg.Port[0]) != ":" {
+		cfg.Port = ":" + cfg.Port
+	}
+
 	if cfg.Credentials.User == "" || cfg.Credentials.BcryptPass == "" {
 		return nil, errors.New("missing credentials")
 	}
 
 	if cfg.Secret == "" {
 		return nil, errors.New("missing secret")
-	}
-
-	if cfg.Addr == "" {
-		return nil, errors.New("no hostname given")
 	}
 
 	return cfg, nil
