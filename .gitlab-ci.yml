@@ -28,7 +28,7 @@ deploy:
   stage: deploy
   when: manual
   script:
-    - docker stop shorty
+    - docker stop shorty || true && docker rm shorty || true
     - docker pull ${CI_REGISTRY}/go/shorty
     - docker run
       -d
