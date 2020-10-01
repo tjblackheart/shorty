@@ -27,7 +27,7 @@ func (app App) admin(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (app App) removeSingle(w http.ResponseWriter, r *http.Request) {
+func (app App) remove(w http.ResponseWriter, r *http.Request) {
 	hashID := mux.Vars(r)["hashID"]
 	if err := app.db.DeleteOne(hashID); err != nil {
 		app.err("admin/deleteOne", err.Error())
