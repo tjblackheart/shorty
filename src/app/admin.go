@@ -14,7 +14,7 @@ import (
 )
 
 func (app App) admin(w http.ResponseWriter, r *http.Request) {
-	shorties, err := app.repo.Find()
+	shorties, err := app.db.Find()
 	if err != nil {
 		app.err("admin/find", err.Error())
 		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
@@ -29,7 +29,7 @@ func (app App) admin(w http.ResponseWriter, r *http.Request) {
 
 func (app App) removeSingle(w http.ResponseWriter, r *http.Request) {
 	hashID := mux.Vars(r)["hashID"]
-	if err := app.repo.DeleteOne(hashID); err != nil {
+	if err := app.db.DeleteOne(hashID); err != nil {
 		app.err("admin/deleteOne", err.Error())
 		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
 	}
@@ -38,7 +38,7 @@ func (app App) removeSingle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) removeAll(w http.ResponseWriter, r *http.Request) {
-	if err := app.repo.DeleteMany(); err != nil {
+	if err := app.db.DeleteMany(); err != nil {
 		app.err("admin/removeAll", err.Error())
 		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
 	}
@@ -78,7 +78,7 @@ func (app App) importJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	buf.Reset()
 
-	if err := app.repo.SaveMany(shorties); err != nil {
+	if err := app.db.SaveMany(shorties); err != nil {
 		app.err("admin/import/saveMany", err.Error())
 		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
 		http.Redirect(w, r, "/_a/", 302)
@@ -90,7 +90,7 @@ func (app App) importJSON(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) exportJSON(w http.ResponseWriter, r *http.Request) {
-	shorties, err := app.repo.Find()
+	shorties, err := app.db.Find()
 	if err != nil {
 		app.err("export/find", err.Error())
 		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})

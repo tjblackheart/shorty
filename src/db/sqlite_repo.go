@@ -15,7 +15,7 @@ type sqliteRepo struct {
 	db *sql.DB
 }
 
-func Connect(path string) (Repository, error) {
+func SQLite(path string) (Repository, error) {
 	db, err := sql.Open("sqlite3", path)
 	if err != nil {
 		return nil, err
@@ -30,11 +30,11 @@ func Connect(path string) (Repository, error) {
 		return nil, err
 	}
 
-	log.Println("Database connected.")
+	log.Info("Database connected.")
 	return repo, nil
 }
 
-func (r sqliteRepo) Disconnect() {
+func (r sqliteRepo) Close() {
 	r.db.Close()
 }
 
@@ -66,7 +66,7 @@ func (r sqliteRepo) Find() ([]*models.Shorty, error) {
 	}
 	defer rows.Close()
 
-	shorties := []*models.Shorty{}
+	var shorties []*models.Shorty
 	for rows.Next() {
 		var s models.Shorty
 		err = rows.Scan(&s.ID, &s.URL, &s.Shorty, &s.Clicks, &s.CreatedAt, &s.IP)
@@ -183,7 +183,7 @@ func (r sqliteRepo) SaveMany(list []*models.Shorty) error {
 	for _, s := range list {
 		if err = r.Save(s); err != nil {
 			if _, ok := err.(ErrUnique); ok {
-				log.Printf("SaveMany: Entry %s already exists.\n", s.Shorty)
+				log.Printf("SaveMany: Entry %s already exists, skipping.\n", s.Shorty)
 				continue
 			}
 

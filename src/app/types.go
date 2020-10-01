@@ -17,7 +17,7 @@ type (
 	// App is an application instance
 	App struct {
 		cfg         *Config
-		repo        db.Repository
+		db          db.Repository
 		session     *scs.SessionManager
 		templates   string
 		credentials Creds

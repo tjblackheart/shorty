@@ -15,7 +15,7 @@ import (
 func Create(cfg *Config) *App {
 	rand.Seed(time.Now().UnixNano())
 
-	repo, err := db.Connect(cfg.DQN)
+	db, err := db.SQLite(cfg.DQN)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -26,7 +26,7 @@ func Create(cfg *Config) *App {
 
 	app := &App{
 		cfg:         cfg,
-		repo:        repo,
+		db:          db,
 		session:     session,
 		templates:   "templates",
 		credentials: cfg.Credentials,
@@ -39,7 +39,7 @@ func Create(cfg *Config) *App {
 
 // Serve starts the server
 func (app App) Serve() {
-	defer app.repo.Disconnect()
+	defer app.db.Close()
 
 	srv := http.Server{
 		Addr:         app.cfg.Addr,
@@ -48,7 +48,7 @@ func (app App) Serve() {
 		WriteTimeout: 5 * time.Second,
 	}
 
-	log.Infof("App listening at %s ...\n", app.cfg.Addr)
+	log.Infof("App listening at %s ...", app.cfg.Addr)
 	log.Fatalln(srv.ListenAndServe())
 }
 

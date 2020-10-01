@@ -34,7 +34,7 @@ func (app App) create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if exist, _ := app.repo.FindOneByURL(s.URL); exist != nil {
+	if exist, _ := app.db.FindOneByURL(s.URL); exist != nil {
 		http.Redirect(w, r, fmt.Sprintf("/v/%s", exist.Shorty), 302)
 		return
 	}
@@ -46,7 +46,7 @@ func (app App) create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := app.repo.Save(s); err != nil {
+	if err := app.db.Save(s); err != nil {
 		app.err("page/create/add", err.Error())
 		app.session.Put(r.Context(), "flash", Flash{"danger", "Error saving data."})
 		http.Redirect(w, r, "/", 302)
@@ -58,7 +58,7 @@ func (app App) create(w http.ResponseWriter, r *http.Request) {
 
 func (app App) view(w http.ResponseWriter, r *http.Request) {
 	hashID := mux.Vars(r)["hashID"]
-	shorty, err := app.repo.FindOneByShortLink(hashID)
+	shorty, err := app.db.FindOneByShortLink(hashID)
 
 	if err != nil {
 		app.err("view/findOne", err.Error())
@@ -74,7 +74,7 @@ func (app App) view(w http.ResponseWriter, r *http.Request) {
 
 func (app App) redirect(w http.ResponseWriter, r *http.Request) {
 	hashID := mux.Vars(r)["hashID"]
-	s, err := app.repo.FindOneByShortLink(hashID)
+	s, err := app.db.FindOneByShortLink(hashID)
 
 	if err != nil {
 		app.err("redirect/findOne", err.Error())
@@ -83,7 +83,7 @@ func (app App) redirect(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.Clicks++
-	if err := app.repo.Update(s); err != nil {
+	if err := app.db.Update(s); err != nil {
 		app.err("redirect/update", err.Error())
 		app.renderError(w, r, "500", "Something went terribly wrong.")
 		return
