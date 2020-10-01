@@ -6,15 +6,16 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3" // sqlite driver only needed here.
+	_ "github.com/mattn/go-sqlite3" // sqlite driver
 	log "github.com/sirupsen/logrus"
 	"github.com/tjblackheart/shorty/models"
 )
 
-type sqliteRepo struct {
+type repository struct {
 	db *sql.DB
 }
 
+// SQLite connects a sqlite3 DB for the given file path
 func SQLite(path string) (Repository, error) {
 	db, err := sql.Open("sqlite3", path)
 	if err != nil {
@@ -25,20 +26,20 @@ func SQLite(path string) (Repository, error) {
 		return nil, err
 	}
 
-	repo := &sqliteRepo{db}
-	if err := repo.init(); err != nil {
+	r := &repository{db}
+	if err := r.init(); err != nil {
 		return nil, err
 	}
 
 	log.Info("Database connected.")
-	return repo, nil
+	return r, nil
 }
 
-func (r sqliteRepo) Close() {
+func (r repository) Close() {
 	r.db.Close()
 }
 
-func (r sqliteRepo) init() error {
+func (r repository) init() error {
 	query := `CREATE TABLE IF NOT EXISTS shorty (
 		id INTEGER NOT NULL PRIMARY KEY,
 		link TEXT NOT NULL,
@@ -57,7 +58,7 @@ func (r sqliteRepo) init() error {
 
 //
 
-func (r sqliteRepo) Find() ([]*models.Shorty, error) {
+func (r repository) Find() ([]*models.Shorty, error) {
 	query := "SELECT * FROM shorty ORDER BY created DESC"
 	rows, err := r.db.Query(query)
 
@@ -83,7 +84,7 @@ func (r sqliteRepo) Find() ([]*models.Shorty, error) {
 	return shorties, nil
 }
 
-func (r sqliteRepo) FindOneByID(id int) (*models.Shorty, error) {
+func (r repository) FindOneByID(id int) (*models.Shorty, error) {
 	var s models.Shorty
 
 	query := "SELECT * FROM shorty WHERE id = ? LIMIT 1"
@@ -97,7 +98,7 @@ func (r sqliteRepo) FindOneByID(id int) (*models.Shorty, error) {
 	return &s, nil
 }
 
-func (r sqliteRepo) FindOneByShortLink(shortLink string) (*models.Shorty, error) {
+func (r repository) FindOneByShortLink(shortLink string) (*models.Shorty, error) {
 	var s models.Shorty
 
 	query := "SELECT * FROM shorty WHERE short_link = ? LIMIT 1"
@@ -111,7 +112,7 @@ func (r sqliteRepo) FindOneByShortLink(shortLink string) (*models.Shorty, error)
 	return &s, nil
 }
 
-func (r sqliteRepo) FindOneByURL(url string) (*models.Shorty, error) {
+func (r repository) FindOneByURL(url string) (*models.Shorty, error) {
 	var s models.Shorty
 
 	query := "SELECT * FROM shorty WHERE link = ? LIMIT 1"
@@ -125,7 +126,7 @@ func (r sqliteRepo) FindOneByURL(url string) (*models.Shorty, error) {
 	return &s, nil
 }
 
-func (r sqliteRepo) DeleteOne(shortLink string) error {
+func (r repository) DeleteOne(shortLink string) error {
 	query := "DELETE FROM shorty WHERE short_link = ?"
 	if _, err := r.db.Exec(query, shortLink); err != nil {
 		return err
@@ -134,7 +135,7 @@ func (r sqliteRepo) DeleteOne(shortLink string) error {
 	return nil
 }
 
-func (r sqliteRepo) DeleteMany() error {
+func (r repository) DeleteMany() error {
 	ctx := context.Background()
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -154,7 +155,7 @@ func (r sqliteRepo) DeleteMany() error {
 	return nil
 }
 
-func (r sqliteRepo) Save(s *models.Shorty) error {
+func (r repository) Save(s *models.Shorty) error {
 	created := s.CreatedAt
 	if s.CreatedAt.IsZero() {
 		created = time.Now()
@@ -173,7 +174,7 @@ func (r sqliteRepo) Save(s *models.Shorty) error {
 	return nil
 }
 
-func (r sqliteRepo) SaveMany(list []*models.Shorty) error {
+func (r repository) SaveMany(list []*models.Shorty) error {
 	ctx := context.Background()
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -183,7 +184,7 @@ func (r sqliteRepo) SaveMany(list []*models.Shorty) error {
 	for _, s := range list {
 		if err = r.Save(s); err != nil {
 			if _, ok := err.(ErrUnique); ok {
-				log.Printf("SaveMany: Entry %s already exists, skipping.\n", s.Shorty)
+				log.Infof("SaveMany: Entry %s already exists, skipping.", s.Shorty)
 				continue
 			}
 
@@ -199,7 +200,7 @@ func (r sqliteRepo) SaveMany(list []*models.Shorty) error {
 	return nil
 }
 
-func (r sqliteRepo) Update(s *models.Shorty) error {
+func (r repository) Update(s *models.Shorty) error {
 	query := "UPDATE shorty SET clicks = ? WHERE id = ?"
 	if _, err := r.db.Exec(query, s.Clicks, s.ID); err != nil {
 		return err
