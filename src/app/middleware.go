@@ -9,10 +9,15 @@ import (
 
 func (app App) requestLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ip := r.Header.Get("X-Real-IP")
+		if ip == "" {
+			ip = r.RemoteAddr
+		}
+
 		log.Infof(
 			"%s %s %s %s",
 			//time.Now().Format(time.RFC3339),
-			r.RemoteAddr,
+			ip,
 			r.Method,
 			r.URL.RequestURI(),
 			r.UserAgent(),

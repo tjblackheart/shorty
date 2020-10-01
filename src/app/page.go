@@ -23,8 +23,13 @@ func (app App) index(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) create(w http.ResponseWriter, r *http.Request) {
+	ip := r.Header.Get("X-Real-IP")
+	if ip == "" {
+		ip = r.RemoteAddr
+	}
+
 	url := strings.TrimSpace(r.PostFormValue("url"))
-	s := &models.Shorty{URL: url, IP: r.RemoteAddr}
+	s := &models.Shorty{URL: url, IP: ip}
 
 	if err := s.Validate(); err != nil {
 		app.err("page/create/validate", "Validation failed: "+err.Error())
