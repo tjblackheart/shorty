@@ -21,14 +21,14 @@ build:
   #  - docker:19.03.12-dind
   stage: build
   script:
-    - docker build --pull . -t ${CI_REGISTRY}/shorty
-    - docker push ${CI_REGISTRY}/shorty
+    - docker build --pull . -t ${CI_REGISTRY}/go/shorty
+    - docker push ${CI_REGISTRY}/go/shorty
 
 deploy:
   stage: deploy
   when: manual
   script:
-    - docker pull ${CI_REGISTRY}/shorty
+    - docker pull ${CI_REGISTRY}/go/shorty
     - docker run \
       -e APP_PORT=${APP_PORT} \
       -e APP_USER=${APP_USER} \
@@ -36,6 +36,6 @@ deploy:
       -e APP_SECRET=${APP_SECRET} \
       -v /opt/volumes/shorty:/data \
       -p "127.0.0.1:${APP_PORT}:${APP_PORT}"
-      ${IMAGE_NAME}
+      ${CI_REGISTRY}/go/shorty
       -d
 
