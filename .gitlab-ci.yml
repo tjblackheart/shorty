@@ -37,4 +37,5 @@ deploy:
       -v /opt/volumes/shorty:/data \
       -p "127.0.0.1:${APP_PORT}:${APP_PORT}"
       ${IMAGE_NAME}
+      -d
 
