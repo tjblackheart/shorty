@@ -12,6 +12,8 @@ stages:
     APP_BCRYPT_PW: ${APP_BCRYPT_PW}
     APP_SECRET: ${APP_SECRET}
     IMAGE_NAME: ${CI_REGISTRY_IMAGE}:latest
+    CI_USER: ${CI_USER}
+    CI_TOKEN: ${CI_TOKEN}
 
 before_script:
   - docker login -u ${CI_USER} --password-stdin ${CI_TOKEN} ${CI_REGISTRY}
