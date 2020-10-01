@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/alexedwards/scs/v2"
+	"github.com/microcosm-cc/bluemonday"
 	log "github.com/sirupsen/logrus"
 	"github.com/tjblackheart/shorty/db"
 )
@@ -30,6 +31,7 @@ func Create(cfg *Config) *App {
 		session:     session,
 		templates:   "templates",
 		credentials: cfg.Credentials,
+		policy:      bluemonday.UGCPolicy(),
 	}
 
 	app.parseManifest()

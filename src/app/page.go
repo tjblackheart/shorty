@@ -29,8 +29,9 @@ func (app App) create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url := strings.TrimSpace(r.PostFormValue("url"))
-	s := &models.Shorty{URL: url, IP: ip}
+	url = app.policy.Sanitize(url)
 
+	s := &models.Shorty{URL: url, IP: ip}
 	if err := s.Validate(); err != nil {
 		app.err("page/create/validate", "Validation failed: "+err.Error())
 		app.session.Put(r.Context(), "error", "What? This does not look like a valid URL.")

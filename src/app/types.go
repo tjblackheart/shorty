@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/alexedwards/scs/v2"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/tjblackheart/shorty/db"
 )
 
@@ -22,6 +23,7 @@ type (
 		templates   string
 		credentials Creds
 		manifest    Manifest
+		policy      *bluemonday.Policy
 	}
 
 	// Flash holds a flash message.
