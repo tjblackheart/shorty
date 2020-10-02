@@ -11,6 +11,7 @@ stages:
     APP_USER: "${APP_USER}"
     APP_BCRYPT_PW: "${APP_BCRYPT_PW}"
     APP_SECRET: "${APP_SECRET}"
+    APP_VOLUME_PATH: "${APP_VOLUME_PATH}"
 
 before_script:
   - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
@@ -37,6 +38,7 @@ deploy:
       -e APP_USER="${APP_USER}"
       -e APP_BCRYPT_PW="${APP_BCRYPT_PW}"
       -e APP_SECRET="${APP_SECRET}"
-      -v /opt/volumes/shorty:/data
+      -v ${APP_VOLUME_PATH}:/data
       -p "127.0.0.1:${APP_PORT}:${APP_PORT}"
+      --restart unless-stopped
       ${CI_REGISTRY}/go/shorty

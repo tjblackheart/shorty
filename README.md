@@ -9,7 +9,7 @@ A small link shortener app written in Go using [Gorilla Mux](https://github.com/
 * To add an admin user: Set APP_USER and APP_BCRYPT_PW. The latter should be a bcrypt encrypted string.
 * Set APP_SECRET to a secure random string, as this is used for the CSRF token.
 
-Run `docker-compose up` to have an auto reload dev base. The frontend then is available at `https://localhost:3000` or whereever you set APP_HOST to. The backend can be reached with the route `/_a/`.
+Run `docker-compose up` to have an auto reload dev base. The frontend then is available at `https://localhost:3000` or whereever you set APP_PORT to. The backend can be reached with the route `/_a/`.
 
 ## LICENSE
 
