@@ -6,8 +6,6 @@ stages:
   allow_failure: false
   only:
     - master
-  variables:
-    CONTAINER: shorty
 
 before_script:
   - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
@@ -22,11 +20,11 @@ deploy:
   stage: deploy
   when: manual
   script:
-    - docker stop ${CONTAINER} || true && docker rm ${CONTAINER} || true
+    - docker stop shorty || true && docker rm shorty || true
     - docker pull ${CI_REGISTRY}/go/shorty
     - docker run
       -d
-      --name ${CONTAINER}
+      --name shorty
       -e APP_PORT="${APP_PORT}"
       -e APP_USER="${APP_USER}"
       -e APP_BCRYPT_PW="${APP_BCRYPT_PW}"
