@@ -118,8 +118,3 @@ func (app App) exportJSON(w http.ResponseWriter, r *http.Request) {
 
 	http.ServeFile(w, r, "/tmp/export.json")
 }
-
-func (app App) logout(w http.ResponseWriter, r *http.Request) {
-	app.session.Destroy(r.Context())
-	http.Redirect(w, r, "/", 302)
-}

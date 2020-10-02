@@ -8,7 +8,7 @@ import (
 )
 
 func (app App) router() *mux.Router {
-	r := mux.NewRouter()
+	r := mux.NewRouter().StrictSlash(true)
 	r.Use(app.recover, app.requestLog, app.loadSession)
 
 	r.Use(csrf.Protect(
