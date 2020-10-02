@@ -7,7 +7,6 @@ stages:
   only:
     - master
   variables:
-    IMAGE: "${CI_REGISTRY}/go/shorty"
     CONTAINER: shorty
 
 before_script:
@@ -16,15 +15,15 @@ before_script:
 build:
   stage: build
   script:
-    - docker build --pull . -t ${IMAGE}
-    - docker push ${IMAGE}
+    - docker build --pull . -t ${CI_REGISTRY}/go/shorty
+    - docker push ${CI_REGISTRY}/go/shorty
 
 deploy:
   stage: deploy
   when: manual
   script:
     - docker stop ${CONTAINER} || true && docker rm ${CONTAINER} || true
-    - docker pull ${IMAGE}
+    - docker pull ${CI_REGISTRY}/go/shorty
     - docker run
       -d
       --name ${CONTAINER}
@@ -35,4 +34,4 @@ deploy:
       -v ${APP_VOLUME_PATH}:/data
       -p "127.0.0.1:${APP_PORT}:${APP_PORT}"
       --restart unless-stopped
-      ${IMAGE}
+      ${CI_REGISTRY}/go/shorty
