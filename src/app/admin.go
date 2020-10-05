@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/flosch/pongo2/v4"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/tjblackheart/shorty/models"
@@ -21,7 +20,7 @@ func (app App) admin(w http.ResponseWriter, r *http.Request) {
 		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
 	}
 
-	app.render(w, "admin/index.html.j2", pongo2.Context{
+	app.render(w, "admin/index.html.j2", Data{
 		"flash":    app.session.Pop(r.Context(), "flash"),
 		"shorties": shorties,
 		"_csrf":    csrf.Token(r),

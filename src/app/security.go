@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/flosch/pongo2/v4"
 	"github.com/gorilla/csrf"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -13,7 +12,7 @@ func (app App) login(w http.ResponseWriter, r *http.Request) {
 	flash := app.session.Pop(r.Context(), "flash")
 	oldVal := app.session.PopString(r.Context(), "oldVal")
 
-	app.render(w, "page/login.html.j2", pongo2.Context{
+	app.render(w, "page/login.html.j2", Data{
 		"flash":  flash,
 		"oldVal": oldVal,
 		"_csrf":  csrf.Token(r),

@@ -5,14 +5,13 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/flosch/pongo2/v4"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/tjblackheart/shorty/models"
 )
 
 func (app App) index(w http.ResponseWriter, r *http.Request) {
-	app.render(w, "page/index.html.j2", pongo2.Context{
+	app.render(w, "page/index.html.j2", Data{
 		"flash": app.session.Pop(r.Context(), "flash"),
 		"error": app.session.PopString(r.Context(), "error"),
 		"auth":  app.session.GetBool(r.Context(), "_auth"),
@@ -71,7 +70,7 @@ func (app App) view(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, "page/shorty.html.j2", pongo2.Context{
+	app.render(w, "page/shorty.html.j2", Data{
 		"host":      r.Host,
 		"shortLink": shorty.Shorty,
 	})
@@ -102,7 +101,7 @@ func (app App) notFound(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) renderError(w http.ResponseWriter, r *http.Request, code, msg string) {
-	app.render(w, "page/error.html.j2", pongo2.Context{
+	app.render(w, "page/error.html.j2", Data{
 		"code":    code,
 		"message": msg,
 	})

@@ -18,16 +18,6 @@ func (app App) initTemplates() {
 	}
 }
 
-func (app App) render(w http.ResponseWriter, name string, data pongo2.Context) {
-	path := fmt.Sprintf("%s/%s", app.templates, name)
-	tpl := pongo2.Must(pongo2.FromCache(path))
-
-	if err := tpl.ExecuteWriter(data, w); err != nil {
-		app.err("render", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
 func (app *App) parseManifest() {
 	app.manifest = Manifest{}
 
@@ -40,5 +30,15 @@ func (app *App) parseManifest() {
 	if err := json.Unmarshal(bs, &app.manifest); err != nil {
 		app.err("parseManifest/unmarshal", err.Error())
 		return
+	}
+}
+
+func (app App) render(w http.ResponseWriter, name string, d Data) {
+	path := fmt.Sprintf("%s/%s", app.templates, name)
+	tpl := pongo2.Must(pongo2.FromCache(path))
+
+	if err := tpl.ExecuteWriter(pongo2.Context(d), w); err != nil {
+		app.err("render", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
