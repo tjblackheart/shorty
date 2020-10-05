@@ -9,10 +9,11 @@ import (
 type (
 	// Config holds the application configuration
 	Config struct {
-		Port        string
-		DQN         string
-		Secret      string
-		Credentials Creds
+		Debug       bool   // if true, templates will be recompiled on each request.
+		Port        string // the port to listen on.
+		DSN         string // database connection string.
+		Secret      string // a random string for csrf generation.
+		Credentials Creds  // login credentials.
 	}
 
 	// App is an application instance

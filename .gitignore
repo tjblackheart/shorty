@@ -4,4 +4,3 @@ src/assets/dist
 src/assets/node_modules
 src/tmp
 .env.local
-start-prod.sh

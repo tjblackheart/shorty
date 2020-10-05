@@ -16,7 +16,7 @@ import (
 func Create(cfg *Config) *App {
 	rand.Seed(time.Now().UnixNano())
 
-	db, err := db.SQLite(cfg.DQN)
+	db, err := db.SQLite(cfg.DSN)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -34,7 +34,7 @@ func Create(cfg *Config) *App {
 		policy:      bluemonday.UGCPolicy(),
 	}
 
-	app.parseManifest()
+	app.initTemplates()
 
 	return app
 }

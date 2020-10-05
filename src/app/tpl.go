@@ -9,15 +9,18 @@ import (
 	"github.com/flosch/pongo2/v4"
 )
 
-func (app App) asset(filename string) string {
-	return app.manifest[filename]
+func (app App) initTemplates() {
+	app.parseManifest()
+
+	pongo2.DefaultSet.Debug = app.cfg.Debug
+	pongo2.DefaultSet.Globals["asset"] = func(filename string) string {
+		return app.manifest[filename]
+	}
 }
 
 func (app App) render(w http.ResponseWriter, name string, data pongo2.Context) {
 	path := fmt.Sprintf("%s/%s", app.templates, name)
-	tpl := pongo2.Must(pongo2.FromFile(path))
-
-	data["asset"] = app.asset
+	tpl := pongo2.Must(pongo2.FromCache(path))
 
 	if err := tpl.ExecuteWriter(data, w); err != nil {
 		app.err("render", err.Error())

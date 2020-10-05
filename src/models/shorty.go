@@ -35,7 +35,7 @@ func (e ErrGenerate) Error() string {
 func (s Shorty) Validate() error {
 	u, err := url.Parse(strings.TrimSpace(s.URL))
 	if err != nil {
-		return err
+		return ErrValidation{err.Error()}
 	}
 
 	if u.Scheme == "" || u.Host == "" || u.Scheme != "http" && u.Scheme != "https" {
