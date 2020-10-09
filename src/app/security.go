@@ -2,7 +2,6 @@ package app
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/csrf"
 	"golang.org/x/crypto/bcrypt"
@@ -25,8 +24,8 @@ func (app App) logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) authenticate(w http.ResponseWriter, r *http.Request) {
-	user := strings.TrimSpace(r.PostFormValue("username"))
-	pass := strings.TrimSpace(r.PostFormValue("password"))
+	user := r.PostFormValue("username")
+	pass := r.PostFormValue("password")
 	app.session.Put(r.Context(), "oldVal", user)
 
 	if user != app.credentials.User {

@@ -15,6 +15,7 @@ type (
 		DSN         string // database connection string.
 		Secret      string // a random string for csrf generation.
 		Credentials Creds  // login credentials.
+		ViewsDir    string // path to templates
 	}
 
 	// App is an application instance
@@ -22,7 +23,6 @@ type (
 		cfg         *Config
 		db          db.Repository
 		session     *scs.SessionManager
-		templates   string
 		credentials Creds
 		manifest    Manifest
 		policy      *bluemonday.Policy

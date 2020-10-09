@@ -6,22 +6,26 @@ stages:
   allow_failure: false
   only:
     - master
+  variables:
+    IMAGE: "${CI_REGISTRY}/${IMAGE_PATH}"
 
 before_script:
   - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
 
 build:
+  extends: .common
   stage: build
   script:
-    - docker build --pull . -t ${CI_REGISTRY}/go/shorty
-    - docker push ${CI_REGISTRY}/go/shorty
+    - docker build --pull . -t ${IMAGE}
+    - docker push ${IMAGE}
 
 deploy:
+  extends: .common
   stage: deploy
   when: manual
   script:
     - docker stop shorty || true && docker rm shorty || true
-    - docker pull ${CI_REGISTRY}/go/shorty
+    - docker pull ${IMAGE}
     - docker run
       -d
       --name shorty
@@ -32,4 +36,4 @@ deploy:
       -v ${APP_VOLUME_PATH}:/data
       -p "127.0.0.1:${APP_PORT}:${APP_PORT}"
       --restart unless-stopped
-      ${CI_REGISTRY}/go/shorty
+      ${IMAGE}

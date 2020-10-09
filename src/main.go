@@ -19,10 +19,11 @@ func main() {
 
 func getCfg() (*app.Config, error) {
 	cfg := &app.Config{
-		Debug:  false,
-		Port:   os.Getenv("APP_PORT"),
-		Secret: os.Getenv("APP_SECRET"),
-		DSN:    "/data/db.sqlite",
+		Debug:    false,
+		Port:     os.Getenv("APP_PORT"),
+		Secret:   os.Getenv("APP_SECRET"),
+		DSN:      "/data/db.sqlite",
+		ViewsDir: "./templates",
 		Credentials: app.Creds{
 			User:       os.Getenv("APP_USER"),
 			BcryptPass: os.Getenv("APP_BCRYPT_PW"),

@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"math/rand"
 	"net/url"
 	"strings"
 	"time"
@@ -47,7 +46,7 @@ func (s Shorty) Validate() error {
 
 func (s *Shorty) Generate() error {
 	hd := hashids.NewData()
-	hd.Salt = fmt.Sprintf("%f", rand.ExpFloat64()*1e9)
+	hd.Salt = fmt.Sprintf("%d", time.Now().UnixNano())
 	hd.MinLength = 3
 
 	h, err := hashids.NewWithData(hd)

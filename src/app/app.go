@@ -29,7 +29,6 @@ func Create(cfg *Config) *App {
 		cfg:         cfg,
 		db:          db,
 		session:     session,
-		templates:   "templates",
 		credentials: cfg.Credentials,
 		policy:      bluemonday.UGCPolicy(),
 	}

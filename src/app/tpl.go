@@ -34,7 +34,7 @@ func (app *App) parseManifest() {
 }
 
 func (app App) render(w http.ResponseWriter, name string, d Data) {
-	path := fmt.Sprintf("%s/%s", app.templates, name)
+	path := fmt.Sprintf("%s/%s", app.cfg.ViewsDir, name)
 	tpl := pongo2.Must(pongo2.FromCache(path))
 
 	if err := tpl.ExecuteWriter(pongo2.Context(d), w); err != nil {
