@@ -4,7 +4,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/flosch/pongo2/v4"
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/tjblackheart/shorty/db"
+	"github.com/tjblackheart/shorty/store"
 )
 
 type (
@@ -20,23 +20,22 @@ type (
 
 	// App is an application instance
 	App struct {
-		cfg         *Config
-		db          db.Repository
-		session     *scs.SessionManager
-		credentials Creds
-		manifest    Manifest
-		policy      *bluemonday.Policy
+		cfg      *Config
+		store    store.Store
+		session  *scs.SessionManager
+		manifest manifest
+		policy   *bluemonday.Policy
 	}
-
-	// Flash holds a flash message.
-	Flash struct{ Type, Message string }
 
 	// Creds holds admin credentials, set by .env
 	Creds struct{ User, BcryptPass string }
 
+	// Flash holds a flash message.
+	flash struct{ Type, Message string }
+
 	// Manifest holds a list of compiled webpack assets.
-	Manifest map[string]string
+	manifest map[string]string
 
 	// Data holds template data as a pongo2 context.
-	Data pongo2.Context
+	data pongo2.Context
 )

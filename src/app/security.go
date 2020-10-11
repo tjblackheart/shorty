@@ -11,7 +11,7 @@ func (app App) login(w http.ResponseWriter, r *http.Request) {
 	flash := app.session.Pop(r.Context(), "flash")
 	oldVal := app.session.PopString(r.Context(), "oldVal")
 
-	app.render(w, "page/login.html.j2", Data{
+	app.render(w, "page/login.html.j2", data{
 		"flash":  flash,
 		"oldVal": oldVal,
 		"_csrf":  csrf.Token(r),
@@ -28,14 +28,14 @@ func (app App) authenticate(w http.ResponseWriter, r *http.Request) {
 	pass := r.PostFormValue("password")
 	app.session.Put(r.Context(), "oldVal", user)
 
-	if user != app.credentials.User {
-		app.session.Put(r.Context(), "flash", Flash{"danger", "Invalid credentials."})
+	if user != app.cfg.Credentials.User {
+		app.session.Put(r.Context(), "flash", flash{"danger", "Invalid credentials."})
 		http.Redirect(w, r, "/_l", 302)
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(app.credentials.BcryptPass), []byte(pass)); err != nil {
-		app.session.Put(r.Context(), "flash", Flash{"danger", "Invalid credentials."})
+	if err := bcrypt.CompareHashAndPassword([]byte(app.cfg.Credentials.BcryptPass), []byte(pass)); err != nil {
+		app.session.Put(r.Context(), "flash", flash{"danger", "Invalid credentials."})
 		http.Redirect(w, r, "/_l", 302)
 		return
 	}

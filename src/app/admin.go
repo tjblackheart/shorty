@@ -14,13 +14,13 @@ import (
 )
 
 func (app App) admin(w http.ResponseWriter, r *http.Request) {
-	shorties, err := app.db.Find()
+	shorties, err := app.store.Find()
 	if err != nil {
-		app.err("admin/find", err.Error())
-		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
+		app.err("admin:find", err.Error())
+		app.session.Put(r.Context(), "flash", flash{"danger", err.Error()})
 	}
 
-	app.render(w, "admin/index.html.j2", Data{
+	app.render(w, "admin/index.html.j2", data{
 		"flash":    app.session.Pop(r.Context(), "flash"),
 		"shorties": shorties,
 		"_csrf":    csrf.Token(r),
@@ -29,18 +29,18 @@ func (app App) admin(w http.ResponseWriter, r *http.Request) {
 
 func (app App) remove(w http.ResponseWriter, r *http.Request) {
 	hashID := mux.Vars(r)["hashID"]
-	if err := app.db.DeleteOne(hashID); err != nil {
-		app.err("admin/deleteOne", err.Error())
-		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
+	if err := app.store.DeleteOne(hashID); err != nil {
+		app.err("admin:deleteOne", err.Error())
+		app.session.Put(r.Context(), "flash", flash{"danger", err.Error()})
 	}
 
 	http.Redirect(w, r, "/_a/", 302)
 }
 
 func (app App) removeAll(w http.ResponseWriter, r *http.Request) {
-	if err := app.db.DeleteMany(); err != nil {
-		app.err("admin/removeAll", err.Error())
-		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
+	if err := app.store.DeleteMany(); err != nil {
+		app.err("admin:removeAll", err.Error())
+		app.session.Put(r.Context(), "flash", flash{"danger", err.Error()})
 	}
 
 	http.Redirect(w, r, "/_a/", 302)
@@ -53,8 +53,8 @@ func (app App) importJSON(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(2 << 20) // 2MB
 	file, header, err := r.FormFile("import")
 	if err != nil {
-		app.err("admin/import/parseForm", err.Error())
-		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
+		app.err("admin:import:parseForm", err.Error())
+		app.session.Put(r.Context(), "flash", flash{"danger", err.Error()})
 		http.Redirect(w, r, "/_a/", 302)
 		return
 	}
@@ -63,51 +63,51 @@ func (app App) importJSON(w http.ResponseWriter, r *http.Request) {
 	mime := header.Header.Get("Content-Type")
 	if mime != "application/json" {
 		msg := "Wrong MIME type: " + mime
-		app.err("admin/import/mime", msg)
-		app.session.Put(r.Context(), "flash", Flash{"danger", msg})
+		app.err("admin:import:mime", msg)
+		app.session.Put(r.Context(), "flash", flash{"danger", msg})
 		http.Redirect(w, r, "/_a/", 302)
 		return
 	}
 
 	io.Copy(&buf, file)
 	if err := json.Unmarshal([]byte(buf.String()), &shorties); err != nil {
-		app.err("admin/import/unmarshal", err.Error())
-		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
+		app.err("admin:import:unmarshal", err.Error())
+		app.session.Put(r.Context(), "flash", flash{"danger", err.Error()})
 		http.Redirect(w, r, "/_a/", 302)
 		return
 	}
 	buf.Reset()
 
-	count, err := app.db.SaveMany(shorties)
+	count, err := app.store.SaveMany(shorties)
 	if err != nil {
-		app.err("admin/import/saveMany", err.Error())
-		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
+		app.err("admin:import:saveMany", err.Error())
+		app.session.Put(r.Context(), "flash", flash{"danger", err.Error()})
 		http.Redirect(w, r, "/_a/", 302)
 		return
 	}
 
-	app.session.Put(r.Context(), "flash", Flash{"success", fmt.Sprintf("Import successful, %d new entries.", count)})
+	app.session.Put(r.Context(), "flash", flash{"success", fmt.Sprintf("Import successful, %d new entries.", count)})
 	http.Redirect(w, r, "/_a/", 302)
 }
 
 func (app App) exportJSON(w http.ResponseWriter, r *http.Request) {
-	shorties, err := app.db.Find()
+	shorties, err := app.store.Find()
 	if err != nil {
-		app.err("export/find", err.Error())
-		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
+		app.err("admin:export:find", err.Error())
+		app.session.Put(r.Context(), "flash", flash{"danger", err.Error()})
 		http.Redirect(w, r, "/_a/", 302)
 	}
 
 	bs, err := json.Marshal(shorties)
 	if err != nil {
-		app.err("export/marshal", err.Error())
-		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
+		app.err("admin:export:marshal", err.Error())
+		app.session.Put(r.Context(), "flash", flash{"danger", err.Error()})
 		http.Redirect(w, r, "/_a/", 302)
 		return
 	}
 
 	if err := ioutil.WriteFile("/tmp/export.json", bs, 0666); err != nil {
-		app.session.Put(r.Context(), "flash", Flash{"danger", err.Error()})
+		app.session.Put(r.Context(), "flash", flash{"danger", err.Error()})
 		http.Redirect(w, r, "/_a/", 302)
 		return
 	}

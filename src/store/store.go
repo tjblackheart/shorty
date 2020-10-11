@@ -1,4 +1,4 @@
-package db
+package store
 
 import (
 	"fmt"
@@ -7,9 +7,9 @@ import (
 )
 
 type (
-	Repository interface {
+	Store interface {
 		Find() ([]*models.Shorty, error)
-		FindOneByID(id int) (*models.Shorty, error)
+		FindOne(id int) (*models.Shorty, error)
 		FindOneByShortLink(hashID string) (*models.Shorty, error)
 		FindOneByURL(url string) (*models.Shorty, error)
 		DeleteOne(shortLink string) error
@@ -17,7 +17,7 @@ type (
 		Save(s *models.Shorty) error
 		SaveMany(s []*models.Shorty) (int, error)
 		Update(s *models.Shorty) error
-		Close()
+		CloseDB()
 	}
 
 	ErrNotImplemented struct{}

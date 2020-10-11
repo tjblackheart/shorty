@@ -45,7 +45,7 @@ func (app App) recover(next http.Handler) http.Handler {
 		defer func() {
 			if err := recover(); err != nil {
 				w.Header().Set("Connection", "close")
-				app.err("recover", fmt.Sprintf("%s", err))
+				app.err("middleware:recover", fmt.Sprintf("%s", err))
 			}
 		}()
 

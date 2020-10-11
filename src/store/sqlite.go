@@ -1,4 +1,4 @@
-package db
+package store
 
 import (
 	"context"
@@ -11,12 +11,12 @@ import (
 	"github.com/tjblackheart/shorty/models"
 )
 
-type repository struct {
+type store struct {
 	db *sql.DB
 }
 
 // SQLite connects a sqlite3 DB for the given file path
-func SQLite(path string) (Repository, error) {
+func SQLite(path string) (Store, error) {
 	db, err := sql.Open("sqlite3", path)
 	if err != nil {
 		return nil, err
@@ -26,20 +26,20 @@ func SQLite(path string) (Repository, error) {
 		return nil, err
 	}
 
-	r := &repository{db}
-	if err := r.init(); err != nil {
+	s := &store{db}
+	if err := s.init(); err != nil {
 		return nil, err
 	}
 
 	log.Info("Database connected.")
-	return r, nil
+	return s, nil
 }
 
-func (r repository) Close() {
-	r.db.Close()
+func (s store) CloseDB() {
+	s.db.Close()
 }
 
-func (r repository) init() error {
+func (s store) init() error {
 	query := `CREATE TABLE IF NOT EXISTS shorty (
 		id INTEGER NOT NULL PRIMARY KEY,
 		link TEXT NOT NULL,
@@ -49,7 +49,7 @@ func (r repository) init() error {
 		ip VARCHAR(100) NOT NULL
 	)`
 
-	if _, err := r.db.Exec(query); err != nil {
+	if _, err := s.db.Exec(query); err != nil {
 		return err
 	}
 
@@ -58,9 +58,9 @@ func (r repository) init() error {
 
 //
 
-func (r repository) Find() ([]*models.Shorty, error) {
+func (s store) Find() ([]*models.Shorty, error) {
 	query := "SELECT * FROM shorty ORDER BY created DESC"
-	rows, err := r.db.Query(query)
+	rows, err := s.db.Query(query)
 
 	if err != nil {
 		return nil, err
@@ -69,12 +69,19 @@ func (r repository) Find() ([]*models.Shorty, error) {
 
 	var shorties []*models.Shorty
 	for rows.Next() {
-		var s models.Shorty
-		err = rows.Scan(&s.ID, &s.URL, &s.Shorty, &s.Clicks, &s.CreatedAt, &s.IP)
+		var shorty models.Shorty
+		err = rows.Scan(
+			&shorty.ID,
+			&shorty.URL,
+			&shorty.Shorty,
+			&shorty.Clicks,
+			&shorty.CreatedAt,
+			&shorty.IP,
+		)
 		if err != nil {
 			return nil, err
 		}
-		shorties = append(shorties, &s)
+		shorties = append(shorties, &shorty)
 	}
 
 	if err = rows.Err(); err != nil {
@@ -84,60 +91,81 @@ func (r repository) Find() ([]*models.Shorty, error) {
 	return shorties, nil
 }
 
-func (r repository) FindOneByID(id int) (*models.Shorty, error) {
-	var s models.Shorty
+func (s store) FindOne(id int) (*models.Shorty, error) {
+	var shorty models.Shorty
 
 	query := "SELECT * FROM shorty WHERE id = ? LIMIT 1"
-	if err := r.db.QueryRow(query, id).Scan(&s.ID, &s.URL, &s.Shorty, &s.Clicks, &s.CreatedAt, &s.IP); err != nil {
+	if err := s.db.QueryRow(query, id).Scan(
+		&shorty.ID,
+		&shorty.URL,
+		&shorty.Shorty,
+		&shorty.Clicks,
+		&shorty.CreatedAt,
+		&shorty.IP,
+	); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrNotFound{}
 		}
 		return nil, err
 	}
 
-	return &s, nil
+	return &shorty, nil
 }
 
-func (r repository) FindOneByShortLink(shortLink string) (*models.Shorty, error) {
-	var s models.Shorty
+func (s store) FindOneByShortLink(shortLink string) (*models.Shorty, error) {
+	var shorty models.Shorty
 
 	query := "SELECT * FROM shorty WHERE short_link = ? LIMIT 1"
-	if err := r.db.QueryRow(query, shortLink).Scan(&s.ID, &s.URL, &s.Shorty, &s.Clicks, &s.CreatedAt, &s.IP); err != nil {
+	if err := s.db.QueryRow(query, shortLink).Scan(
+		&shorty.ID,
+		&shorty.URL,
+		&shorty.Shorty,
+		&shorty.Clicks,
+		&shorty.CreatedAt,
+		&shorty.IP,
+	); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrNotFound{}
 		}
 		return nil, err
 	}
 
-	return &s, nil
+	return &shorty, nil
 }
 
-func (r repository) FindOneByURL(url string) (*models.Shorty, error) {
-	var s models.Shorty
+func (s store) FindOneByURL(url string) (*models.Shorty, error) {
+	var shorty models.Shorty
 
 	query := "SELECT * FROM shorty WHERE link = ? LIMIT 1"
-	if err := r.db.QueryRow(query, url).Scan(&s.ID, &s.URL, &s.Shorty, &s.Clicks, &s.CreatedAt, &s.IP); err != nil {
+	if err := s.db.QueryRow(query, url).Scan(
+		&shorty.ID,
+		&shorty.URL,
+		&shorty.Shorty,
+		&shorty.Clicks,
+		&shorty.CreatedAt,
+		&shorty.IP,
+	); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrNotFound{}
 		}
 		return nil, err
 	}
 
-	return &s, nil
+	return &shorty, nil
 }
 
-func (r repository) DeleteOne(shortLink string) error {
+func (s store) DeleteOne(shortLink string) error {
 	query := "DELETE FROM shorty WHERE short_link = ?"
-	if _, err := r.db.Exec(query, shortLink); err != nil {
+	if _, err := s.db.Exec(query, shortLink); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r repository) DeleteMany() error {
+func (s store) DeleteMany() error {
 	ctx := context.Background()
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
@@ -155,14 +183,14 @@ func (r repository) DeleteMany() error {
 	return nil
 }
 
-func (r repository) Save(s *models.Shorty) error {
-	created := s.CreatedAt
-	if s.CreatedAt.IsZero() {
+func (s store) Save(shorty *models.Shorty) error {
+	created := shorty.CreatedAt
+	if shorty.CreatedAt.IsZero() {
 		created = time.Now()
 	}
 
 	query := "INSERT INTO shorty (link, short_link, clicks, created, ip) VALUES (?, ?, ?, ?, ?)"
-	_, err := r.db.Exec(query, s.URL, s.Shorty, s.Clicks, created, s.IP)
+	_, err := s.db.Exec(query, shorty.URL, shorty.Shorty, shorty.Clicks, created, shorty.IP)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
@@ -174,18 +202,18 @@ func (r repository) Save(s *models.Shorty) error {
 	return nil
 }
 
-func (r repository) SaveMany(list []*models.Shorty) (int, error) {
+func (s store) SaveMany(list []*models.Shorty) (int, error) {
 	count := 0
 	ctx := context.Background()
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return count, err
 	}
 
-	for _, s := range list {
-		if err = r.Save(s); err != nil {
+	for _, shorty := range list {
+		if err = s.Save(shorty); err != nil {
 			if _, ok := err.(ErrUnique); ok {
-				log.Infof("SaveMany: Entry %s already exists, skipping.", s.Shorty)
+				log.Infof("SaveMany: Entry %s already exists, skipping.", shorty.Shorty)
 				continue
 			}
 
@@ -202,9 +230,9 @@ func (r repository) SaveMany(list []*models.Shorty) (int, error) {
 	return count, nil
 }
 
-func (r repository) Update(s *models.Shorty) error {
+func (s store) Update(shorty *models.Shorty) error {
 	query := "UPDATE shorty SET clicks = ? WHERE id = ?"
-	if _, err := r.db.Exec(query, s.Clicks, s.ID); err != nil {
+	if _, err := s.db.Exec(query, shorty.Clicks, shorty.ID); err != nil {
 		return err
 	}
 	return nil

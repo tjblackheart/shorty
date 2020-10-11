@@ -11,7 +11,7 @@ import (
 )
 
 func (app App) index(w http.ResponseWriter, r *http.Request) {
-	app.render(w, "page/index.html.j2", Data{
+	app.render(w, "page/index.html.j2", data{
 		"flash": app.session.Pop(r.Context(), "flash"),
 		"error": app.session.PopString(r.Context(), "error"),
 		"auth":  app.session.GetBool(r.Context(), "_auth"),
@@ -31,28 +31,28 @@ func (app App) create(w http.ResponseWriter, r *http.Request) {
 
 	s := &models.Shorty{URL: url, IP: ip}
 	if err := s.Validate(); err != nil {
-		app.err("page/create/validate", "Validation failed: "+err.Error())
+		app.err("page:create:validate", fmt.Sprintf("Validation failed: %s: %s", err.Error(), s.URL))
 		app.session.Put(r.Context(), "error", "What? This does not look like a valid URL.")
 		app.session.Put(r.Context(), "url", url)
 		http.Redirect(w, r, "/", 302)
 		return
 	}
 
-	if exist, _ := app.db.FindOneByURL(s.URL); exist != nil {
+	if exist, _ := app.store.FindOneByURL(s.URL); exist != nil {
 		http.Redirect(w, r, fmt.Sprintf("/v/%s", exist.Shorty), 302)
 		return
 	}
 
 	if err := s.Generate(); err != nil {
-		app.err("page/create/generate", "Generator failed: "+err.Error())
-		app.session.Put(r.Context(), "flash", Flash{"danger", "Error generating short link."})
+		app.err("page:create:generate", "Generator failed: "+err.Error())
+		app.session.Put(r.Context(), "flash", flash{"danger", "Error generating short link."})
 		http.Redirect(w, r, "/", 302)
 		return
 	}
 
-	if err := app.db.Save(s); err != nil {
-		app.err("page/create/add", err.Error())
-		app.session.Put(r.Context(), "flash", Flash{"danger", "Error saving data."})
+	if err := app.store.Save(s); err != nil {
+		app.err("page:create:add", err.Error())
+		app.session.Put(r.Context(), "flash", flash{"danger", "Error saving data."})
 		http.Redirect(w, r, "/", 302)
 		return
 	}
@@ -62,15 +62,15 @@ func (app App) create(w http.ResponseWriter, r *http.Request) {
 
 func (app App) view(w http.ResponseWriter, r *http.Request) {
 	hashID := mux.Vars(r)["hashID"]
-	shorty, err := app.db.FindOneByShortLink(hashID)
+	shorty, err := app.store.FindOneByShortLink(hashID)
 
 	if err != nil {
-		app.err("view/findOne", err.Error())
+		app.err("page:view:findOne", err.Error())
 		app.renderError(w, r, "404", "Link not found. Perhaps it was removed?")
 		return
 	}
 
-	app.render(w, "page/shorty.html.j2", Data{
+	app.render(w, "page/shorty.html.j2", data{
 		"host":      r.Host,
 		"shortLink": shorty.Shorty,
 	})
@@ -78,17 +78,17 @@ func (app App) view(w http.ResponseWriter, r *http.Request) {
 
 func (app App) redirect(w http.ResponseWriter, r *http.Request) {
 	hashID := mux.Vars(r)["hashID"]
-	s, err := app.db.FindOneByShortLink(hashID)
+	s, err := app.store.FindOneByShortLink(hashID)
 
 	if err != nil {
-		app.err("redirect/findOne", err.Error())
+		app.err("page:redirect:findOne", err.Error())
 		app.renderError(w, r, "404", "Link not found. Perhaps it was removed?")
 		return
 	}
 
 	s.Clicks++
-	if err := app.db.Update(s); err != nil {
-		app.err("redirect/update", err.Error())
+	if err := app.store.Update(s); err != nil {
+		app.err("page:redirect:update", err.Error())
 		app.renderError(w, r, "500", "Something went terribly wrong.")
 		return
 	}
@@ -101,7 +101,7 @@ func (app App) notFound(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) renderError(w http.ResponseWriter, r *http.Request, code, msg string) {
-	app.render(w, "page/error.html.j2", Data{
+	app.render(w, "page/error.html.j2", data{
 		"code":    code,
 		"message": msg,
 	})

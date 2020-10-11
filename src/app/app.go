@@ -9,28 +9,27 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/microcosm-cc/bluemonday"
 	log "github.com/sirupsen/logrus"
-	"github.com/tjblackheart/shorty/db"
+	"github.com/tjblackheart/shorty/store"
 )
 
 // Create builds a new App
 func Create(cfg *Config) *App {
 	rand.Seed(time.Now().UnixNano())
 
-	db, err := db.SQLite(cfg.DSN)
+	store, err := store.SQLite(cfg.DSN)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	session := scs.New()
 	session.Lifetime = 24 * time.Hour
-	gob.Register(Flash{})
+	gob.Register(flash{})
 
 	app := &App{
-		cfg:         cfg,
-		db:          db,
-		session:     session,
-		credentials: cfg.Credentials,
-		policy:      bluemonday.UGCPolicy(),
+		cfg:     cfg,
+		store:   store,
+		session: session,
+		policy:  bluemonday.UGCPolicy(),
 	}
 
 	app.initTemplates()
@@ -40,7 +39,7 @@ func Create(cfg *Config) *App {
 
 // Serve starts the server
 func (app App) Serve() {
-	defer app.db.Close()
+	defer app.store.CloseDB()
 
 	srv := http.Server{
 		Addr:         app.cfg.Port,

@@ -19,26 +19,26 @@ func (app App) initTemplates() {
 }
 
 func (app *App) parseManifest() {
-	app.manifest = Manifest{}
+	app.manifest = manifest{}
 
 	bs, err := ioutil.ReadFile("assets/dist/manifest.json")
 	if err != nil {
-		app.err("parseManifest/readFile", err.Error())
+		app.err("template:parseManifest:readFile", err.Error())
 		return
 	}
 
 	if err := json.Unmarshal(bs, &app.manifest); err != nil {
-		app.err("parseManifest/unmarshal", err.Error())
+		app.err("template:parseManifest:unmarshal", err.Error())
 		return
 	}
 }
 
-func (app App) render(w http.ResponseWriter, name string, d Data) {
+func (app App) render(w http.ResponseWriter, name string, d data) {
 	path := fmt.Sprintf("%s/%s", app.cfg.ViewsDir, name)
 	tpl := pongo2.Must(pongo2.FromCache(path))
 
 	if err := tpl.ExecuteWriter(pongo2.Context(d), w); err != nil {
-		app.err("render", err.Error())
+		app.err("template:render", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
