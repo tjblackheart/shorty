@@ -70,17 +70,18 @@ func (s store) Find() ([]*models.Shorty, error) {
 	var shorties []*models.Shorty
 	for rows.Next() {
 		var shorty models.Shorty
-		err = rows.Scan(
+
+		if err = rows.Scan(
 			&shorty.ID,
 			&shorty.URL,
 			&shorty.Shorty,
 			&shorty.Clicks,
 			&shorty.CreatedAt,
 			&shorty.IP,
-		)
-		if err != nil {
+		); err != nil {
 			return nil, err
 		}
+
 		shorties = append(shorties, &shorty)
 	}
 
@@ -184,13 +185,12 @@ func (s store) DeleteMany() error {
 }
 
 func (s store) Save(shorty *models.Shorty) error {
-	created := shorty.CreatedAt
 	if shorty.CreatedAt.IsZero() {
-		created = time.Now()
+		shorty.CreatedAt = time.Now()
 	}
 
 	query := "INSERT INTO shorty (link, short_link, clicks, created, ip) VALUES (?, ?, ?, ?, ?)"
-	_, err := s.db.Exec(query, shorty.URL, shorty.Shorty, shorty.Clicks, created, shorty.IP)
+	_, err := s.db.Exec(query, shorty.URL, shorty.Shorty, shorty.Clicks, shorty.CreatedAt, shorty.IP)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {

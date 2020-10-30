@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
@@ -50,7 +51,26 @@ func (app App) importJSON(w http.ResponseWriter, r *http.Request) {
 	var shorties []*models.Shorty
 	var buf bytes.Buffer
 
-	r.ParseMultipartForm(2 << 20) // 2MB
+	maxSize := 5 << 20 // 5MB
+	actualSize, _ := strconv.Atoi(r.Header.Get("Content-Length"))
+
+	if actualSize > maxSize {
+		msg := fmt.Sprintf("Uploaded file too big. The maximum size is %d bytes.", maxSize)
+		app.err("admin:import:parse", msg)
+		app.session.Put(r.Context(), "flash", flash{"danger", msg})
+		http.Redirect(w, r, "/_a/", 302)
+		return
+	}
+
+	// play it safe if the header check didn't work out
+	r.Body = http.MaxBytesReader(w, r.Body, int64(maxSize))
+	if err := r.ParseMultipartForm(int64(maxSize)); err != nil {
+		app.err("admin:import:parseForm", err.Error())
+		app.session.Put(r.Context(), "flash", flash{"danger", err.Error()})
+		http.Redirect(w, r, "/_a/", 302)
+		return
+	}
+
 	file, header, err := r.FormFile("import")
 	if err != nil {
 		app.err("admin:import:parseForm", err.Error())

@@ -3,7 +3,7 @@ package models
 import (
 	"fmt"
 	"net/url"
-	"strings"
+	"regexp"
 	"time"
 
 	"github.com/speps/go-hashids"
@@ -32,12 +32,17 @@ func (e ErrGenerate) Error() string {
 }
 
 func (s Shorty) Validate() error {
-	u, err := url.Parse(strings.TrimSpace(s.URL))
+	u, err := url.Parse(s.URL)
 	if err != nil {
 		return ErrValidation{err.Error()}
 	}
 
 	if u.Scheme == "" || u.Host == "" || u.Scheme != "http" && u.Scheme != "https" {
+		return ErrValidation{"invalid URL"}
+	}
+
+	rx := regexp.MustCompile(`^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$`)
+	if !rx.MatchString(s.URL) {
 		return ErrValidation{"invalid URL"}
 	}
 
