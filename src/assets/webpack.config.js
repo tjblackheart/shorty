@@ -6,6 +6,7 @@ encore
   .addStyleEntry('css/app', './scss/app.scss')
   .disableSingleRuntimeChunk()
   .cleanupOutputBeforeBuild()
+  .copyFiles({ from: './images', to: 'images/[path][name].[hash:8].[ext]' })
   .enableSourceMaps(!encore.isProduction())
   .enableVersioning(encore.isProduction())
   .setManifestKeyPrefix("")
